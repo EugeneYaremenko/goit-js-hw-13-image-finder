@@ -4,6 +4,7 @@ import galleryListItemsTemplate from '../templates/gallery-list-items.hbs';
 const debounce = require('lodash.debounce');
 
 const refs = {
+  searchInput: document.querySelector('input'),
   searchForm: document.querySelector('#search-form'),
   galleryItems: document.querySelector('#gallery'),
   loadMoreBtn: document.querySelector('button[data-action="load-more"]'),
@@ -11,8 +12,15 @@ const refs = {
 
 refs.searchForm.addEventListener(
   'input',
-  debounce(searchFormInputHeandler, 1000),
+  debounce(searchFormInputHeandler, 3000),
 );
+
+refs.searchInput.addEventListener('keypress', event => {
+  if (event.code === 'Enter') {
+    event.preventDefault();
+    searchFormInputHeandler(event);
+  }
+});
 
 refs.loadMoreBtn.addEventListener('click', loadMoreBtnHandler);
 
@@ -34,14 +42,14 @@ function searchFormInputHeandler(event) {
   });
 }
 
-function loadMoreBtnHandler() {
+export default function loadMoreBtnHandler() {
   apiService.feachArticles().then(hits => {
     const murkup = buildListItemsMurkup(hits);
 
     insertGalerryItems(murkup);
 
     window.scrollTo({
-      top: 0,
+      bottom: 0,
       behavior: 'smooth',
     });
   });
